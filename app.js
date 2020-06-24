@@ -31,7 +31,6 @@ app.post('/save', (req, res) => {
     blog
     .save()
     .then(result => {
-        alert("DATA SAVED");
         res.status(201).json({
             message: "Blog Stored Successfully",
             result: result
