@@ -21,6 +21,7 @@ app.post('/save', (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         content: req.body.content,
         author: req.body.author,
+        bio: req.body.bio,
         fb: req.body.fb,
         insta: req.body.insta,
         linkedin: req.body.linkedin,
