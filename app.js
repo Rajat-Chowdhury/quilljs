@@ -1,23 +1,46 @@
 var express = require('express');
-
-
-
 var app= express();
+const mongoose = require("mongoose");
+const bodyParser = require('body-parser');
+require('dotenv').config()
 
-//set up template engine
+const Blog = require("./models/blog");
 
+mongoose.connect(process.env.DATABASEURL, {useNewUrlParser: true, useUnifiedTopology: true});
 app.set('view engine' , 'ejs');
-app.get('/', function(req,res){
-    res.render(  'index');
+app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+app.get('/', (req,res) => {
+    res.render('index');
 });
 
-//static files 
+app.post('/save', (req, res) => {
+    const blog = new Blog({
+        _id: new mongoose.Types.ObjectId(),
+        content: req.body.content,
+        author: req.body.author,
+        fb: req.body.fb,
+        insta: req.body.insta,
+        linkedin: req.body.linkedin,
+        github: req.body.github,
 
-app.use(express.static('./public'));
+    })
+    
+    blog
+    .save()
+    .then(result => {
+        res.status(201).json({
+            message: "Blog Stored Successfully",
+            result: result
+        })
+    })
+    .catch(err => {
+        console.log(err);
+    })
+})
 
-
-
-//listening to port 
-
-app.listen(5000);
-console.log("you are listening to port 5000");
+app.listen(process.env.PORT, () => {
+    console.log("Server has started on port " + process.env.PORT )
+});

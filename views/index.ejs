@@ -13,97 +13,101 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </head>
 <body>
+
+    <h1 style="text-align: center;" class="mb-4">Editor</h1>
+
     <div id="editor">
-        <p>Hello World!</p>
-        <p>Some initial <strong>bold</strong> text</p>
-        <p><br></p>
+      <p>Hello World!</p>
+      <p>Some initial <strong>bold</strong> text</p>
+      <p><br></p>
     </div>
-    <div class="container">
-        <form>
-            <div class="form-group">
-              <label >Author Name</label>
-              <input type="name" class="form-control"  >
-              
-            </div>
-            
-            
-            <h5>Select social media accounts you want to link</h5>
-            <div class="form-check">
-                
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                <label class="form-check-label" for="defaultCheck1">
-                  Facebook
-                </label>
-                
-            </div>
-            <div class="form-check">
-                
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-                <label class="form-check-label" for="defaultCheck2">
-                  Twitter
-                </label>
-                
-            </div>
-            <div class="form-check">
-                
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck3">
-                <label class="form-check-label" for="defaultCheck3">
-                  Instagram
-                </label>
-                
-            </div>
-            <div class="form-group">
-                <label >Enter link of the account</label>
-                <input type="name" class="form-control" >
-                
-              </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+
+    <div class="container mt-5">
+      <div class="form-group">
+        <label >Author Name</label>
+        <input id="author" type="name" class="form-control">  
+      </div>
+      <div class="form-group">
+        <label >Facebook Link</label>
+        <input id="fb" type="name" class="form-control">  
+      </div>
+      <div class="form-group">
+        <label >Instagram Link</label>
+        <input id="insta" type="name" class="form-control">  
+      </div>
+      <div class="form-group">
+        <label >LinkedIn Link</label>
+        <input id="linkedin" type="name" class="form-control">  
+      </div>
+      <div class="form-group">
+        <label >Github Link</label>
+        <input id="github" type="name" class="form-control">  
+      </div>
+      <button id="save" type="submit" class="btn btn-primary">Submit</button>
     </div>
+
+  
     <script>
-        var toolbarOptions = [
-            ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-            ['link', 'image'],        
-            ['blockquote', 'code-block'],
+      var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+          ['link', 'image'],        
+          ['blockquote', 'code-block'],
 
-            [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-            [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
 
-            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
 
-                   // dropdown with defaults from theme
-            
-            [{ 'align': [] }],
+                  // dropdown with defaults from theme
+          
+          [{ 'align': [] }],
 
-            ['clean']                                         // remove formatting button
-        ];
+          ['clean']                                         // remove formatting button
+      ];
 
-        var quill = new Quill('#editor', {
-          theme: 'snow',
-          modules : {
-              toolbar: toolbarOptions
+      var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules : {
+            toolbar: toolbarOptions
 
 
-          }
-        });
-        
-        let saveBtn = document.querySelector('button');
-        saveBtn.addEventListener('click', function(){
-            var delta = editor.getContents();
-            var text = editor.getText();
-            var justHtml = editor.root.innerHTML;
-            preciousContent.innerHTML = JSON.stringify(delta);
-            justTextContent.innerHTML = text;
-            justHtmlContent.innerHTML = justHtml;
-            console.log(delta);
-            console.log(text);
-            console.log(justHtml);
+        }
+      });
+      
+      $('#save').click(() => {
+        window.delta = quill.getContents();
 
+        var json = JSON.stringify(delta);
+        var obj = JSON.parse(json);
+
+        var content = $(".ql-editor").html();
+        var author = $("#author").val();
+        var fb = $("#fb").val();
+        var insta = $("#insta").val();
+        var linkedin = $("#linkedin").val();
+        var github = $("#github").val();
+
+        fetch('/save', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            content: content, 
+            author: author,
+            fb: fb,
+            insta: insta,
+            linkedin: linkedin,
+            github: github
+          })
         })
+        .then(response => response.json())
+        .then(data => console.log(data))
+      })
     </script>
     
 </body>
